@@ -41,6 +41,10 @@ C:\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe -uroot -e "CREATE DATABASE
 
 The application is then on <http://127.0.0.1:8000> (and on the LAN on port 8000).
 
+This machine also starts the server automatically at logon through
+`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ICTHospital-Local.vbs`.
+Remove that file if you would rather start it by hand.
+
 ### Optional: a `.test` hostname
 
 Laragon auto-creates a virtual host for any folder in `C:\laragon\www`. To use
