@@ -32,6 +32,7 @@ $permision[] = $permission->permission_name;
         ===
     -->
     <meta charset="utf-8">
+    <meta name="author" content="Abdur Rahman">
     <title>@if(Session::get('inName')=='') ICTHospital @else {{Session::get('inName')}} @endif</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -683,10 +684,17 @@ table i {
                           <!-- content ends -->
                           <div class="row">
                             <div class="col-md-12">
-                                <div class="copyright">
-                                   <p class="col-md-9 col-sm-9 col-xs-12 copyright"> <a href="#" target="_blank">{{Session::get('inName')}}</a> &copy;<?php echo date("Y");?></p>
-                                    <p class="col-md-3 col-sm-3 col-xs-12 powered-by">Developed by:
-                                    <a href="https://www.ictinnovations.com/" target="_blank" rel="noopener">ICT Innovations</a></p>
+                                <div class="copyright ih-footer">
+                                    <p class="copyright ih-footer-left">
+                                        <a href="#" target="_blank">{{ Session::get('inName') }}</a> &copy; {{ date('Y') }}
+                                        <span class="ih-footer-sep">&middot;</span>
+                                        <span class="ih-footer-origin">ICTHospital by <a href="https://www.ictinnovations.com/" target="_blank" rel="noopener">ICT Innovations</a></span>
+                                    </p>
+                                    <p class="powered-by ih-footer-right">
+                                        <span class="ih-credit-label">Designed &amp; developed by</span>
+                                        <span class="ih-credit-name">Abdur Rahman</span>
+                                        <span class="ih-credit-role">Full Stack Developer</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>

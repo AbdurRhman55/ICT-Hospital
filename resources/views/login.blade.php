@@ -10,7 +10,8 @@
       Licensed under the GNU General Public License v3.0.
     --}}
     <meta charset="utf-8">
-    <title>Sign in · {{ $institute->name ?? 'ICTHospital' }}</title>
+    <meta name="author" content="Abdur Rahman">
+    <title>Sign in &middot; {{ $institute->name ?? 'ICTHospital' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/svg+xml" href="{{ asset('img/brand/icthospital-mark.svg') }}">
@@ -48,6 +49,9 @@
         .ih-alert.err { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
         .ih-foot { margin-top: 32px; color: #94a3b8; font-size: 13px; text-align: center; }
         .ih-foot a { color: #64748b; text-decoration: none; }
+        .ih-foot a:hover { color: #0f766e; }
+        .ih-foot-credit { display: block; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 12px; letter-spacing: .01em; }
+        .ih-foot-credit strong { color: #475569; font-weight: 600; }
         @media (max-width: 900px) {
             .ih-login { grid-template-columns: 1fr; }
             .ih-side { display: none; }
@@ -101,7 +105,7 @@
                 <button type="submit" class="ih-btn">Sign in</button>
             </form>
 
-            <div class="ih-foot">&copy; {{ date('Y') }} {{ $institute->name ?? 'ICTHospital' }} · Developed by <a href="https://www.ictinnovations.com/" target="_blank" rel="noopener">ICT Innovations</a></div>
+            <div class="ih-foot">&copy; {{ date('Y') }} {{ $institute->name ?? 'ICTHospital' }} · Developed by <a href="https://www.ictinnovations.com/" target="_blank" rel="noopener">ICT Innovations</a><span class="ih-foot-credit">Designed &amp; developed by <strong>Abdur Rahman</strong> &middot; Full Stack Developer</span></div>
         </div>
     </main>
 </div>
