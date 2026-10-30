@@ -4,8 +4,7 @@ Hospital management software with unified communications built in. ICTHospital h
 the day-to-day running of a hospital or clinic, and adds SMS, voice and video
 consultation so patients and clinicians can reach each other without leaving the system.
 
-Built and maintained by [ICT Vision](https://ict.vision), part of
-[ICT Innovations](https://www.ictinnovations.com).
+Built and maintained by Abdur Rahman, Full Stack Developer.
 
 Product site: **[www.icthospital.com](https://www.icthospital.com)**
 
@@ -25,8 +24,8 @@ see it rather than read about it, there is a
 
 ICTHospital previously ran on CodeIgniter 2.2.2, which reached end of life in 2017 and
 will not run on PHP 8. Rather than patch an unsupported framework carrying patient data,
-the application was rebuilt on **Laravel 12**, sharing a foundation with our
-[ICTSchool](https://github.com/ictinnovations/ICTSchool) platform.
+the application was rebuilt on **Laravel 12**, sharing a common foundation with other
+school and hospital management platforms.
 
 Where it stands:
 
@@ -51,7 +50,7 @@ Where it stands:
 - Hospital dashboard: patient and appointment counts, bed occupancy, clinical activity,
   income against expenses, recent patients and appointments
 - Global search across patients and doctors
-- Messaging to patients and doctors over [ICTCore](https://github.com/ictinnovations/ictcore),
+- Messaging to patients and doctors over the ICTCore communications gateway,
   with templates, SMS logging and notification types
 - Two scheduled jobs, `hospital:payment-reminder` and `hospital:appointment-reminder`,
   which text patients who owe money or who are due in
@@ -181,8 +180,8 @@ will be locked out of every screen.
 ## Installation
 
 ```bash
-git clone https://github.com/ictinnovations/ICTHospital.git
-cd ICTHospital
+git clone https://github.com/AbdurRhman55/ICT-Hospital.git
+cd ICT-Hospital
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -253,8 +252,7 @@ regardless. A clean install is 84 tables, down from 117.
 
 ## Communications
 
-SMS and voice run through [ICTCore](https://github.com/ictinnovations/ictcore), our own
-open source communications framework, configured in Settings. Video consultation targets
+SMS and voice run through the ICTCore communications framework, configured in Settings. Video consultation targets
 LiveKit. None of these are required to run the core system.
 
 Two scheduled jobs use it:
@@ -282,22 +280,12 @@ bash smoke-test.sh
 
 The current baseline is 33 pages serving, no server errors.
 
-## Related projects
-
-- [ICTSchool](https://github.com/ictinnovations/ICTSchool) - school management
-- [ICTCore](https://github.com/ictinnovations/ictcore) - communications framework
-- [ICTFax](https://github.com/ictinnovations/ictfax) - fax server on FreeSWITCH
-- [ICTDialer](https://github.com/ictinnovations/ictdialer) - auto dialer and campaigns
-- [ICTPBX Community Edition](https://github.com/ictinnovations/ictpbx-community-edition) - multi-tenant IP PBX
-
-Full list: [ictinnovations.com/projects](https://ictinnovations.com/projects/)
-
 ## Licence
 
 GNU General Public License v3.0 - see [LICENSE](LICENSE).
 
-Copyright (c) ICT Innovations.
+Copyright (c) ICTHospital contributors.
 
 ---
 
-Developed by Tahir Almas, [ICT Innovations](https://www.ictinnovations.com).
+Developed by Abdur Rahman, Full Stack Developer.

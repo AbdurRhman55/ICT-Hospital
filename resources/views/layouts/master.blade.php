@@ -687,8 +687,6 @@ table i {
                                 <div class="copyright ih-footer">
                                     <p class="copyright ih-footer-left">
                                         <a href="#" target="_blank">{{ Session::get('inName') }}</a> &copy; {{ date('Y') }}
-                                        <span class="ih-footer-sep">&middot;</span>
-                                        <span class="ih-footer-origin">ICTHospital by <a href="https://www.ictinnovations.com/" target="_blank" rel="noopener">ICT Innovations</a></span>
                                     </p>
                                     <p class="powered-by ih-footer-right">
                                         <span class="ih-credit-label">Designed &amp; developed by</span>

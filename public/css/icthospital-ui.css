@@ -85,8 +85,6 @@ label, .control-label { color: #334155; font-weight: 600; }
 .ih-footer-left, .ih-footer-right { margin: 0 !important; float: none !important; width: auto !important; }
 .ih-footer-left a { color: var(--ih-muted) !important; text-decoration: none; }
 .ih-footer-left a:hover { color: var(--ih-teal) !important; }
-.ih-footer-sep { color: #cbd5e1; margin: 0 6px; }
-.ih-footer-origin { color: #94a3b8; }
 .ih-footer-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .ih-credit-label { color: #94a3b8; }
 .ih-credit-name { color: var(--ih-navy); font-weight: 600; }

@@ -72,7 +72,7 @@
                 <li><i class="fas fa-file-invoice-dollar"></i> Billing, cash closing and doctor share</li>
             </ul>
         </div>
-        <small>ICTHospital by ICT Innovations</small>
+        <small>Hospital Management System</small>
     </aside>
 
     <main class="ih-main">
@@ -105,7 +105,7 @@
                 <button type="submit" class="ih-btn">Sign in</button>
             </form>
 
-            <div class="ih-foot">&copy; {{ date('Y') }} {{ $institute->name ?? 'ICTHospital' }} · Developed by <a href="https://www.ictinnovations.com/" target="_blank" rel="noopener">ICT Innovations</a><span class="ih-foot-credit">Designed &amp; developed by <strong>Abdur Rahman</strong> &middot; Full Stack Developer</span></div>
+            <div class="ih-foot">&copy; {{ date('Y') }} {{ $institute->name ?? 'ICTHospital' }}<span class="ih-foot-credit">Designed &amp; developed by <strong>Abdur Rahman</strong> &middot; Full Stack Developer</span></div>
         </div>
     </main>
 </div>
