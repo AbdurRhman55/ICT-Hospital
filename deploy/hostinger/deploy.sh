@@ -76,6 +76,16 @@ else
   git -C "$APP_DIR" clean -fd
 fi
 
+# From here on the script updates the checkout it lives in. Bash reads a script
+# incrementally, so a `git reset --hard` under its own feet can make it execute a
+# half-old file. Re-run this now-latest copy from a stable location instead.
+if [ -z "${ICTH_DEPLOY_RELOCATED:-}" ]; then
+  SELF_COPY="$(mktemp /tmp/icthospital-deploy.XXXXXX.sh)"
+  cp "$APP_DIR/deploy/hostinger/deploy.sh" "$SELF_COPY"
+  chmod +x "$SELF_COPY"
+  ICTH_DEPLOY_RELOCATED=1 exec bash "$SELF_COPY" "$@"
+fi
+
 cd "$APP_DIR"
 
 say "Installing PHP dependencies"
