@@ -47,30 +47,45 @@ done
 say() { printf '\n\033[1;36m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m[warning] %s\033[0m\n' "$*"; }
 
+# Hostinger's PHP selector disables proc_open and does not load sodium by
+# default. Both are needed by Composer and Passport, so provide an override
+# for the command line. The web SAPI is unaffected by these flags.
+PHP_FLAGS=()
+if ! "$PHP_BIN" -m | grep -qi '^sodium$'; then
+  PHP_FLAGS+=("-d" "extension=sodium.so")
+fi
+if ! "$PHP_BIN" -r 'exit(function_exists("proc_open") ? 0 : 1);' >/dev/null 2>&1; then
+  PHP_FLAGS+=("-d" "disable_functions=")
+fi
+
+php_run() { "$PHP_BIN" "${PHP_FLAGS[@]}" "$@"; }
+
 say "Checking environment"
 command -v git >/dev/null || { echo "git is required" >&2; exit 1; }
 command -v "$PHP_BIN" >/dev/null || { echo "php is required" >&2; exit 1; }
-"$PHP_BIN" -r 'exit(version_compare(PHP_VERSION, "8.2.0", ">=") ? 0 : 1);' \
+php_run -r 'exit(version_compare(PHP_VERSION, "8.2.0", ">=") ? 0 : 1);' \
   || { echo "PHP 8.2 or newer is required" >&2; exit 1; }
 
 say "Fetching the application into $APP_DIR"
 if [ ! -d "$APP_DIR/.git" ]; then
   mkdir -p "$DOMAIN_DIR"
-  git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$APP_DIR"
+  git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
 else
   git -C "$APP_DIR" fetch --prune origin "$BRANCH"
   git -C "$APP_DIR" reset --hard "origin/$BRANCH"
-  git -C "$APP_DIR" clean -fd -e .env -e storage -e vendor
+  git -C "$APP_DIR" clean -fd
 fi
 
 cd "$APP_DIR"
 
 say "Installing PHP dependencies"
-if [ -f composer.lock ]; then
-  "$COMPOSER_BIN" install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-else
-  "$COMPOSER_BIN" install --no-dev --no-interaction --prefer-dist
-fi
+# --no-scripts: proc_open is disabled on this host; the package manifest is
+# rebuilt explicitly below instead of through Composer's post-autoload hook.
+"$PHP_BIN" "${PHP_FLAGS[@]}" "$(command -v "$COMPOSER_BIN")" install \
+  --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+  --no-scripts --ignore-platform-req=ext-sodium
+
+php_run artisan package:discover --ansi >/dev/null
 
 say "Preparing writable directories"
 mkdir -p storage/app/public \
@@ -86,38 +101,37 @@ if [ ! -f .env ]; then
   cp .env.production.example .env
   warn ".env created from .env.production.example — set the database credentials."
 fi
+chmod 600 .env
 
 if ! grep -qE '^APP_KEY=base64:.+' .env; then
-  "$PHP_BIN" artisan key:generate --force
+  php_run artisan key:generate --force
 fi
 
 if [ ! -f storage/oauth-private.key ] || [ ! -f storage/oauth-public.key ]; then
-  "$PHP_BIN" artisan passport:keys --force
-  chmod 600 storage/oauth-private.key storage/oauth-public.key
+  php_run artisan passport:keys --force
 fi
+chmod 600 storage/oauth-private.key storage/oauth-public.key
 
 say "Running database migrations"
-if "$PHP_BIN" artisan migrate --force --no-interaction; then
+if php_run artisan migrate --force --no-interaction; then
   if [ "$SEED" = "1" ]; then
-    "$PHP_BIN" artisan db:seed --force --no-interaction
+    php_run artisan db:seed --force --no-interaction
     if [ "$DEMO" = "1" ]; then
-      "$PHP_BIN" artisan db:seed --class=DemoDataSeeder --force --no-interaction
+      php_run artisan db:seed --class=DemoDataSeeder --force --no-interaction
     fi
   fi
 else
-  warn "Migrations failed — check DB_* in $APP_DIR/.env. The code is deployed, the site will return 500 until the database is reachable."
+  warn "Migrations failed — check DB_* in $APP_DIR/.env. The code is deployed; the site returns 500 until the database is reachable."
 fi
 
 say "Publishing the public directory"
 mkdir -p "$PUBLIC_HTML"
-# Keep Let's Encrypt validation files and the generated index.php.
 rsync -a --delete \
   --exclude '.well-known' \
   --exclude 'index.php' \
   --exclude 'storage' \
   "$APP_DIR/public/" "$PUBLIC_HTML/"
 
-# Document-root bootstrap pointing at the application one level up.
 cat > "$PUBLIC_HTML/index.php" <<'PHP'
 <?php
 
@@ -128,7 +142,6 @@ define('LARAVEL_START', microtime(true));
 
 // The application lives beside public_html, outside the web root.
 $appPath = dirname(__DIR__).'/icthospital';
-$appPath = getenv('ICTHOSPITAL_APP_PATH') ?: $appPath;
 
 if (file_exists($maintenance = $appPath.'/storage/framework/maintenance.php')) {
     require $maintenance;
@@ -142,18 +155,17 @@ $app = require_once $appPath.'/bootstrap/app.php';
 $app->handleRequest(Request::capture());
 PHP
 
-# Storage URL: public_html/storage -> the application's public storage.
+# PHP's symlink() is disabled on this host, so the link is made here.
 rm -rf "$PUBLIC_HTML/storage"
 ln -sfn "$APP_DIR/storage/app/public" "$PUBLIC_HTML/storage"
 
 say "Caching configuration, routes and views"
-"$PHP_BIN" artisan optimize:clear >/dev/null 2>&1 || true
-"$PHP_BIN" artisan config:cache
-"$PHP_BIN" artisan route:cache
-"$PHP_BIN" artisan view:cache
-"$PHP_BIN" artisan storage:link >/dev/null 2>&1 || true
+php_run artisan optimize:clear >/dev/null 2>&1 || true
+php_run artisan config:cache
+php_run artisan route:cache
+php_run artisan view:cache
 
 say "Deployment finished"
-echo "Application : $APP_DIR"
+echo "Application  : $APP_DIR"
 echo "Document root: $PUBLIC_HTML"
-echo "URL         : ${APP_URL:-https://$DOMAIN}"
+echo "URL          : https://$DOMAIN"

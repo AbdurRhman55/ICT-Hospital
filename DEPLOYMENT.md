@@ -77,6 +77,7 @@ rights because Laragon edits `C:\Windows\System32\drivers\etc\hosts`.
 | PHP | 8.3.36 (`/opt/alt/php83/usr/bin/php`) |
 | Composer | 2.9.8 |
 | Database | MariaDB 11.8 |
+| Web server | LiteSpeed |
 | Domain | `greenyellow-zebra-564499.hostingersite.com` |
 | App directory | `~/domains/<domain>/icthospital` |
 | Document root | `~/domains/<domain>/public_html` |
@@ -132,11 +133,25 @@ migrations, republishes the public assets and rebuilds the caches.
 ### 2.5 Scheduler
 
 The two reminder jobs are registered in `routes/console.php`. Add one cron entry
-in **hPanel → Advanced → Cron Jobs**:
+in **hPanel → Advanced → Cron Jobs** (every minute):
 
 ```
-* * * * * cd ~/domains/greenyellow-zebra-564499.hostingersite.com/icthospital && /opt/alt/php83/usr/bin/php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd ~/domains/greenyellow-zebra-564499.hostingersite.com/icthospital && /opt/alt/php83/usr/bin/php -d disable_functions= artisan schedule:run >> /dev/null 2>&1
 ```
+
+### 2.6 Hostinger-specific notes
+
+Hostinger's PHP selector on this account disables two things the tooling needs.
+`deploy/hostinger/deploy.sh` works around both automatically:
+
+| Restriction | Effect | Workaround in the deploy script |
+| --- | --- | --- |
+| `proc_open` in `disable_functions` | Composer's post-install hook fails | Composer runs with `--no-scripts`; `artisan package:discover` is run directly with `-d disable_functions=` |
+| `ext-sodium` not enabled for PHP 8.3 | Composer refuses to install `lcobucci/jwt` | Installs with `--ignore-platform-req=ext-sodium`; Passport signs with RSA/OpenSSL, which works |
+| `symlink()` disabled in PHP | `artisan storage:link` fails | The `public_html/storage` link is created with `ln -s` in bash |
+
+To enable sodium for the web SAPI as well, tick **sodium** in
+**hPanel → Advanced → PHP Configuration → PHP extensions**.
 
 ### 2.6 Backups
 
